@@ -57,19 +57,19 @@ int main(int argc, char** argv) {
                 0, 0, 0, 1;
     pcl::transformPointCloud(*M,*P,transform);*/
 
-    bool pclImpl = false;
+    bool pclImpl = true;
 
     if(!pclImpl)
     {
         pcl::PointCloud<pcl::PointXYZ>::Ptr pcpy (new pcl::PointCloud<pcl::PointXYZ>);
         pcl::copyPointCloud(*P,*pcpy);
 
-        SimpleICP icp(M, pcpy);
-        icp.run(1,false);
+        SimpleICP icp(M, P);
+        icp.run(100,true);
 
-        pcl::copyPointCloud(*P,*pcpy);
+        /*pcl::copyPointCloud(*P,*pcpy);
         TrICP icp2(M, pcpy,1.0);
-        icp2.run(1,false);
+        icp2.run(1,false);*/
 
 
         std::cout << icp.getFinalTransformation() <<std::endl;

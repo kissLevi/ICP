@@ -8,23 +8,7 @@
 #include "BaseICP.h"
 #include <set>
 #include <vector>
-
-struct PointPair {
-    float squaredDistance;
-    int modelPointIndex;
-    int dataPointIndex;
-    PointPair(float squaredDistance,int modelPointIndex,int dataPointIndex):squaredDistance(squaredDistance),modelPointIndex(modelPointIndex),dataPointIndex(dataPointIndex){};
-    PointPair(){};
-    bool operator() (const PointPair & lhs, const PointPair& rhs) const
-    {
-        return lhs.squaredDistance < rhs.squaredDistance;
-    }
-
-    bool operator <(const PointPair& pt) const
-    {
-        return squaredDistance < pt.squaredDistance;
-    }
-};
+#include "SimpleICP.h"
 
 class TrICP : public BaseICP {
 public:

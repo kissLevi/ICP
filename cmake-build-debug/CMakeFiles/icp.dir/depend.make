@@ -1440,6 +1440,7 @@ CMakeFiles/icp.dir/ICP/SimpleICP.cpp.o: /usr/local/include/pcl-1.9/pcl/point_typ
 CMakeFiles/icp.dir/ICP/SimpleICP.cpp.o: /usr/local/include/pcl-1.9/pcl/register_point_struct.h
 
 CMakeFiles/icp.dir/ICP/TrICP.cpp.o: ../ICP/BaseICP.h
+CMakeFiles/icp.dir/ICP/TrICP.cpp.o: ../ICP/SimpleICP.h
 CMakeFiles/icp.dir/ICP/TrICP.cpp.o: ../ICP/TrICP.cpp
 CMakeFiles/icp.dir/ICP/TrICP.cpp.o: ../ICP/TrICP.h
 CMakeFiles/icp.dir/ICP/TrICP.cpp.o: /usr/local/Cellar/eigen/3.3.7/include/eigen3/Eigen/Cholesky

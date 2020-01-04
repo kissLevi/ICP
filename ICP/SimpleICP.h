@@ -7,6 +7,7 @@
 
 #include "BaseICP.h"
 #include <set>
+#include <pcl/visualization/pcl_visualizer.h>
 
 struct PointPair {
 
@@ -22,7 +23,7 @@ struct PointPair {
 
     bool operator <(const PointPair& pt) const
     {
-        return (this->modelPointIndex < pt.modelPointIndex);
+        return (this->squaredDistance < pt.squaredDistance);
     }
 };
 

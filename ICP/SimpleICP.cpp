@@ -26,26 +26,10 @@ void SimpleICP::run(int maxIterations,
                 R(2,0), R(2,1), R(2,2), t(2),
                 0, 0, 0, 1;
 
-        Eigen::Matrix4d rotation = Eigen::Matrix4d::Identity();
-
-        rotation << R(0,0), R(0,1), R(0,2), 0,
-                R(1,0), R(1,1), R(1,2), 0,
-                R(2,0), R(2,1), R(2,2), 0,
-                0, 0, 0, 1;
-
-        Eigen::Matrix4d translation = Eigen::Matrix4d::Identity();
-
-        translation << 1, 0, 0, t(0),
-                0, 1, 0, t(1),
-                0, 0, 1, t(2),
-                0, 0, 0, 1;
-
         _transformation *= transform;
 
         //Setting new point cloud
-        pcl::transformPointCloud(*_D, *_D, transform.transpose().cast<float>());
-
-        setNewD(_D);
+        pcl::transformPointCloud(*_D, *_D, transform);
 
         if(showResult)
         {
@@ -64,14 +48,13 @@ bool SimpleICP::iterate(
         float eps) {
 
     //Number of nearest neighbours
-    const int K = 50;
+    const int K = 200;
 
     std::vector<int> pointIdxNKNSearch(K);
     std::vector<float> pointNKNSquaredDistance(K);
 
-    auto * pairs (new std::set<struct PointPair>);
 
-    Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
+    auto * pairs (new std::set<struct PointPair>);
 
     for(auto i = 0; i < _D->size(); ++i)
     {
@@ -84,35 +67,8 @@ bool SimpleICP::iterate(
                 result = pairs->insert(PointPair(pointNKNSquaredDistance[elementIndex],pointIdxNKNSearch[elementIndex],i));
                 ++elementIndex;
             }while(!result.second && elementIndex <K);
-            elementIndex--;
-            if(result.second && elementIndex >= 0) {
-                /*Eigen::Vector3d point0;
-                Eigen::Vector3d point1;
-
-                point0 << _D->points[i].x, _D->points[i].y, _D->points[i].z;
-                point1 <<   _M->points[ pointIdxNKNSearch[elementIndex] ].x,
-                        _M->points[ pointIdxNKNSearch[elementIndex] ].y,
-                        _M->points[ pointIdxNKNSearch[elementIndex] ].z;
-                //Remove means
-                point0 -= _cm;
-                point1 -= _cd;
-                H(0,0) += point0.x() *point1.x();
-                H(0,1) += point0.x() *point1.y();
-                H(0,2) += point0.x() *point1.z();
-                H(1,0) += point0.y() *point1.x();
-                H(1,1) += point0.y() *point1.y();
-                H(1,2) += point0.y() *point1.z();
-                H(2,0) += point0.z() *point1.x();
-                H(2,1) += point0.z() *point1.y();
-                H(2,2) += point0.z() *point1.z();*/
-            }
-
-
         }
     }
-
-
-
 
     float oldError = error;
     error = 0;
@@ -137,25 +93,26 @@ bool SimpleICP::iterate(
     _cm /= pairs->size();
     _cd /= pairs->size();
 
-    Eigen::Vector3d point0;
-    Eigen::Vector3d point1;
+    Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
+    Eigen::Vector3d dataPoint;
+    Eigen::Vector3d modelPoint;
     for(auto & pair : *pairs) {
-        point0 << _D->points[pair.dataPointIndex].x, _D->points[pair.dataPointIndex].y, _D->points[pair.dataPointIndex].z;
-        point1 << _M->points[pair.modelPointIndex].x,
+        dataPoint << _D->points[pair.dataPointIndex].x, _D->points[pair.dataPointIndex].y, _D->points[pair.dataPointIndex].z;
+        modelPoint << _M->points[pair.modelPointIndex].x,
                 _M->points[pair.modelPointIndex].y,
                 _M->points[pair.modelPointIndex].z;
         //Remove means
-        point0 -= _cm;
-        point1 -= _cd;
-        H(0, 0) += point0.x() * point1.x();
-        H(0, 1) += point0.x() * point1.y();
-        H(0, 2) += point0.x() * point1.z();
-        H(1, 0) += point0.y() * point1.x();
-        H(1, 1) += point0.y() * point1.y();
-        H(1, 2) += point0.y() * point1.z();
-        H(2, 0) += point0.z() * point1.x();
-        H(2, 1) += point0.z() * point1.y();
-        H(2, 2) += point0.z() * point1.z();
+        dataPoint -= _cd;
+        modelPoint -= _cm;
+        H(0, 0) += dataPoint.x() * modelPoint.x();
+        H(0, 1) += dataPoint.x() * modelPoint.y();
+        H(0, 2) += dataPoint.x() * modelPoint.z();
+        H(1, 0) += dataPoint.y() * modelPoint.x();
+        H(1, 1) += dataPoint.y() * modelPoint.y();
+        H(1, 2) += dataPoint.y() * modelPoint.z();
+        H(2, 0) += dataPoint.z() * modelPoint.x();
+        H(2, 1) += dataPoint.z() * modelPoint.y();
+        H(2, 2) += dataPoint.z() * modelPoint.z();
     }
     Eigen::JacobiSVD<Eigen::Matrix3d> svd(H, Eigen::ComputeFullV | Eigen::ComputeFullU);
 

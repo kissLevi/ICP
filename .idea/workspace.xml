@@ -14,8 +14,12 @@
     <list default="true" id="4344b1bd-59cc-4e19-af0a-0414def6b396" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ICP/SimpleICP.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ICP/SimpleICP.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ICP/SimpleICP.h" beforeDir="false" afterPath="$PROJECT_DIR$/ICP/SimpleICP.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/icp.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/icp.dir/CXX.includecache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/icp.dir/ICP/SimpleICP.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/icp.dir/ICP/SimpleICP.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/icp.dir/ICP/TrICP.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/icp.dir/ICP/TrICP.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/icp.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/icp.dir/depend.internal" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/icp.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/icp.dir/depend.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/icp.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/icp.dir/main.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/icp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/icp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
@@ -42,18 +46,22 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/cmake-build-debug/CMakeFiles" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cmake-build-debug/CMakeFiles" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/ICP" />
       <recent name="$PROJECT_DIR$/cmake-build-debug" />
+      <recent name="$PROJECT_DIR$/ICP" />
     </key>
   </component>
   <component name="RunManager">
-    <configuration name="icp" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="fountain_a.ply fountain_a.ply 0" PASS_PARENT_ENVS_2="true" PROJECT_NAME="icp" TARGET_NAME="icp" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="icp" RUN_TARGET_NAME="icp">
+    <configuration name="icp" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="bunny.ply bunny.ply 0 25" PASS_PARENT_ENVS_2="true" PROJECT_NAME="icp" TARGET_NAME="icp" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="icp" RUN_TARGET_NAME="icp">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -98,6 +106,7 @@
       <workItem from="1577833088196" duration="289000" />
       <workItem from="1577921103045" duration="8681000" />
       <workItem from="1578052584353" duration="12585000" />
+      <workItem from="1578168876173" duration="4306000" />
     </task>
     <servers />
   </component>
@@ -105,44 +114,48 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="318" y="168" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1578140898962">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state x="424" y="202" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1578173011118">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state x="424" y="202" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1440.180.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1578123440914" />
+    <state x="424" y="202" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1440.180.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1578173011118" />
     <state x="318" y="168" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1578140898962" />
-    <state width="1398" height="243" key="GridCell.Tab.0.bottom" timestamp="1578141223059">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state x="706" y="350" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1578170903836">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1878" height="243" key="GridCell.Tab.0.bottom/-1440.180.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1578137366285" />
-    <state width="1878" height="149" key="GridCell.Tab.0.bottom/-1440.203.1440.877/0.0.1920.1035@0.0.1920.1035" timestamp="1577968353555" />
-    <state width="1878" height="122" key="GridCell.Tab.0.bottom/-1440.203.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1576849943152" />
+    <state x="706" y="350" key="#com.intellij.fileTypes.FileTypeChooser/-1440.180.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1578170903836" />
+    <state width="1878" height="177" key="GridCell.Tab.0.bottom" timestamp="1578173934886">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1878" height="177" key="GridCell.Tab.0.bottom/-1440.180.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1578173934886" />
+    <state width="1878" height="177" key="GridCell.Tab.0.bottom/-1440.203.1440.877/0.0.1920.1035@0.0.1920.1035" timestamp="1578173201873" />
+    <state width="1878" height="177" key="GridCell.Tab.0.bottom/-1440.203.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1578173308539" />
     <state width="1398" height="243" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1578141223059" />
     <state width="1878" height="149" key="GridCell.Tab.0.bottom/0.0.1920.1080@0.0.1920.1080" timestamp="1577999749150" />
     <state width="1398" height="243" key="GridCell.Tab.0.bottom/0.23.1440.832@0.23.1440.832" timestamp="1578138907056" />
-    <state width="1398" height="243" key="GridCell.Tab.0.center" timestamp="1578141223058">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state width="1878" height="177" key="GridCell.Tab.0.center" timestamp="1578173934885">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1878" height="243" key="GridCell.Tab.0.center/-1440.180.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1578137366284" />
-    <state width="1878" height="149" key="GridCell.Tab.0.center/-1440.203.1440.877/0.0.1920.1035@0.0.1920.1035" timestamp="1577968353554" />
-    <state width="1878" height="122" key="GridCell.Tab.0.center/-1440.203.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1576849943150" />
+    <state width="1878" height="177" key="GridCell.Tab.0.center/-1440.180.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1578173934885" />
+    <state width="1878" height="177" key="GridCell.Tab.0.center/-1440.203.1440.877/0.0.1920.1035@0.0.1920.1035" timestamp="1578173201871" />
+    <state width="1878" height="177" key="GridCell.Tab.0.center/-1440.203.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1578173308537" />
     <state width="1398" height="243" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1578141223058" />
     <state width="1878" height="149" key="GridCell.Tab.0.center/0.0.1920.1080@0.0.1920.1080" timestamp="1577999749149" />
     <state width="1398" height="243" key="GridCell.Tab.0.center/0.23.1440.832@0.23.1440.832" timestamp="1578138907055" />
-    <state width="1398" height="243" key="GridCell.Tab.0.left" timestamp="1578141223058">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state width="1878" height="177" key="GridCell.Tab.0.left" timestamp="1578173934884">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1878" height="243" key="GridCell.Tab.0.left/-1440.180.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1578137366283" />
-    <state width="1878" height="149" key="GridCell.Tab.0.left/-1440.203.1440.877/0.0.1920.1035@0.0.1920.1035" timestamp="1577968353552" />
-    <state width="1878" height="122" key="GridCell.Tab.0.left/-1440.203.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1576849943149" />
+    <state width="1878" height="177" key="GridCell.Tab.0.left/-1440.180.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1578173934884" />
+    <state width="1878" height="177" key="GridCell.Tab.0.left/-1440.203.1440.877/0.0.1920.1035@0.0.1920.1035" timestamp="1578173201869" />
+    <state width="1878" height="177" key="GridCell.Tab.0.left/-1440.203.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1578173308535" />
     <state width="1398" height="243" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1578141223058" />
     <state width="1878" height="149" key="GridCell.Tab.0.left/0.0.1920.1080@0.0.1920.1080" timestamp="1577999749149" />
     <state width="1398" height="243" key="GridCell.Tab.0.left/0.23.1440.832@0.23.1440.832" timestamp="1578138907055" />
-    <state width="1398" height="243" key="GridCell.Tab.0.right" timestamp="1578141223059">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state width="1878" height="177" key="GridCell.Tab.0.right" timestamp="1578173934885">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1878" height="243" key="GridCell.Tab.0.right/-1440.180.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1578137366284" />
-    <state width="1878" height="149" key="GridCell.Tab.0.right/-1440.203.1440.877/0.0.1920.1035@0.0.1920.1035" timestamp="1577968353554" />
-    <state width="1878" height="122" key="GridCell.Tab.0.right/-1440.203.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1576849943151" />
+    <state width="1878" height="177" key="GridCell.Tab.0.right/-1440.180.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1578173934885" />
+    <state width="1878" height="177" key="GridCell.Tab.0.right/-1440.203.1440.877/0.0.1920.1035@0.0.1920.1035" timestamp="1578173201872" />
+    <state width="1878" height="177" key="GridCell.Tab.0.right/-1440.203.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1578173308538" />
     <state width="1398" height="243" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1578141223059" />
     <state width="1878" height="149" key="GridCell.Tab.0.right/0.0.1920.1080@0.0.1920.1080" timestamp="1577999749150" />
     <state width="1398" height="243" key="GridCell.Tab.0.right/0.23.1440.832@0.23.1440.832" timestamp="1578138907056" />

@@ -32,14 +32,13 @@ Eigen::Vector3d mean(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr points);
 int main(int argc, char** argv) {
 
 
-    if(argc != 4) {
+    if(argc != 5) {
         std::cout << "Error! Requied parameters: Model point cloud,  Data point cloud. Plc implementation." << std::endl;
         return -1;
     }
     pcl::PointCloud<pcl::PointXYZ>::Ptr M (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointXYZ>::Ptr P (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr origP (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr pcpy (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr Final (new pcl::PointCloud<pcl::PointXYZ>);
 
     pcl::PLYReader reader;
     reader.read(argv[1],*M);
@@ -47,50 +46,34 @@ int main(int argc, char** argv) {
 
     Eigen::Matrix4f transform_1 = Eigen::Matrix4f::Identity();
 
-    transform_1 (0,3) = 20.0;
+    transform_1 (0,3) = 5.0;
     pcl::transformPointCloud (*P, *P, transform_1);
 
 
-    pcl::copyPointCloud(*P,*origP);
+    pcl::copyPointCloud(*P,*Final);
 
 
     bool pclImpl = std::stoi(argv[3]);
+    int maxIterations = std::stoi(argv[4]);
 
     if(!pclImpl)
     {
-
-        pcl::copyPointCloud(*P,*pcpy);
-
-        SimpleICP icp(M, pcpy);
-        icp.run(1,true);
+        SimpleICP icp(M, Final);
+        icp.run(maxIterations,false,0.000001);
 
         auto finalTransformation = icp.getFinalTransformation();
 
         std::cout << finalTransformation <<std::endl;
 
-        for(auto &pt : *P) {
-            Eigen::Vector4d tmp;
-
-            tmp << pt.x, pt.y, pt.z, 1;
-
-            tmp = finalTransformation * tmp;
-
-            pt.x = tmp(0) / tmp(3);
-            pt.y = tmp(1) / tmp(3);
-            pt.z = tmp(2) / tmp(3);
-
-
-        }
     }
     else{
 
         pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-        icp.setInputSource(M);
-        icp.setInputTarget(P);
-        pcl::PointCloud<pcl::PointXYZ> final;
-        icp.align(final);
+        icp.setInputSource(P);
+        icp.setInputTarget(M);
+        icp.setMaximumIterations(maxIterations);
+        icp.align(*Final);
         std::cout << icp.getFinalTransformation() << std::endl;
-        pcl::transformPointCloud(*P, *P, icp.getFinalTransformation().inverse());
 
     }
 
@@ -103,16 +86,11 @@ int main(int argc, char** argv) {
     viewer->addPointCloud<pcl::PointXYZ> (P, "sample cloud2");
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud2");
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0,1,0, "sample cloud2");
-
-    viewer->addPointCloud<pcl::PointXYZ> (pcpy, "sample cloud3");
+    viewer->addPointCloud<pcl::PointXYZ> (Final, "sample cloud3");
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud3");
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0,0,1, "sample cloud3");
 
-    viewer->addPointCloud<pcl::PointXYZ> (origP, "sample cloud4");
-    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud4");
-    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0,1,1, "sample cloud4");
-
-    viewer->addCoordinateSystem (1.0);
+    viewer->addCoordinateSystem (0.1);
     viewer->initCameraParameters ();
 
     viewer->setBackgroundColor (0, 0, 0);

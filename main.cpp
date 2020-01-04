@@ -32,12 +32,14 @@ Eigen::Vector3d mean(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr points);
 int main(int argc, char** argv) {
 
 
-    if(argc != 3) {
-        std::cout << "Error! Requied parameters: Model point cloud,  Data point cloud." << std::endl;
+    if(argc != 4) {
+        std::cout << "Error! Requied parameters: Model point cloud,  Data point cloud. Plc implementation." << std::endl;
         return -1;
     }
     pcl::PointCloud<pcl::PointXYZ>::Ptr M (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointXYZ>::Ptr P (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr origP (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr pcpy (new pcl::PointCloud<pcl::PointXYZ>);
 
     pcl::PLYReader reader;
     reader.read(argv[1],*M);
@@ -45,76 +47,54 @@ int main(int argc, char** argv) {
 
     Eigen::Matrix4f transform_1 = Eigen::Matrix4f::Identity();
 
-    transform_1 (0,3) = 10.0;
-    //transform_1 (0,3) = 5.0;
-
+    transform_1 (0,3) = 20.0;
     pcl::transformPointCloud (*P, *P, transform_1);
 
-    /*Eigen::Matrix4d transform = Eigen::Matrix4d::Identity();
-    transform << 1, 0, 0, 10,
-                0, 1, 0, 3,
-                0, 0, 1, 10,
-                0, 0, 0, 1;
-    pcl::transformPointCloud(*M,*P,transform);*/
 
-    bool pclImpl = true;
+    pcl::copyPointCloud(*P,*origP);
+
+
+    bool pclImpl = std::stoi(argv[3]);
 
     if(!pclImpl)
     {
-        pcl::PointCloud<pcl::PointXYZ>::Ptr pcpy (new pcl::PointCloud<pcl::PointXYZ>);
+
         pcl::copyPointCloud(*P,*pcpy);
 
-        SimpleICP icp(M, P);
-        icp.run(100,true);
+        SimpleICP icp(M, pcpy);
+        icp.run(1,true);
 
-        /*pcl::copyPointCloud(*P,*pcpy);
-        TrICP icp2(M, pcpy,1.0);
-        icp2.run(1,false);*/
+        auto finalTransformation = icp.getFinalTransformation();
 
+        std::cout << finalTransformation <<std::endl;
 
-        std::cout << icp.getFinalTransformation() <<std::endl;
+        for(auto &pt : *P) {
+            Eigen::Vector4d tmp;
 
-        //pcl::copyPointCloud(*icp.getTransformedD(),*P);
-        //pcl::transformPointCloud(*P, *P, icp.getFinalTransformation());
+            tmp << pt.x, pt.y, pt.z, 1;
 
-        /*Eigen::Vector3d t = Eigen::Vector3d::Zero(3);
-        Eigen::Matrix3d R = Eigen::Matrix3d::Identity();
-        float error;
+            tmp = finalTransformation * tmp;
 
-        int maxNumberOfIterations = 50;
-
+            pt.x = tmp(0) / tmp(3);
+            pt.y = tmp(1) / tmp(3);
+            pt.z = tmp(2) / tmp(3);
 
 
-        for(int i = 0; i < maxNumberOfIterations; ++i)
-        {
-            Eigen::Matrix4d transform = Eigen::Matrix4d::Identity();
-            transform << R(0,0), R(0,1), R(0,2), t(0),
-                    R(1,0), R(1,1), R(1,2), t(1),
-                    R(2,0), R(2,1), R(2,2), t(2),
-                    0, 0, 0, 1;
-            pcl::transformPointCloud(*P, *P, transform);
-            if (iterate(M, P, R, t, error))
-            {
-                break;
-            }
-
-        }*/
+        }
     }
     else{
+
         pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
         icp.setInputSource(M);
         icp.setInputTarget(P);
-        pcl::PointCloud<pcl::PointXYZ> Final;
-        icp.align(Final);
+        pcl::PointCloud<pcl::PointXYZ> final;
+        icp.align(final);
         std::cout << icp.getFinalTransformation() << std::endl;
-
         pcl::transformPointCloud(*P, *P, icp.getFinalTransformation().inverse());
+
     }
 
-
-
-
-
+    //Visualize result
     pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     viewer->setBackgroundColor (0, 0, 0);
     viewer->addPointCloud<pcl::PointXYZ> (M, "sample cloud");
@@ -123,6 +103,15 @@ int main(int argc, char** argv) {
     viewer->addPointCloud<pcl::PointXYZ> (P, "sample cloud2");
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud2");
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0,1,0, "sample cloud2");
+
+    viewer->addPointCloud<pcl::PointXYZ> (pcpy, "sample cloud3");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud3");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0,0,1, "sample cloud3");
+
+    viewer->addPointCloud<pcl::PointXYZ> (origP, "sample cloud4");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud4");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0,1,1, "sample cloud4");
+
     viewer->addCoordinateSystem (1.0);
     viewer->initCameraParameters ();
 
@@ -132,105 +121,4 @@ int main(int argc, char** argv) {
         viewer->spinOnce (100);
     }
     return 0;
-}
-
-bool iterate(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr M,
-             const pcl::PointCloud<pcl::PointXYZ>::ConstPtr D,
-             Eigen::Matrix3d& R,
-             Eigen::Vector3d& t,
-             float& error,
-             bool showResult,
-             float eps) {
-
-    //Calculate means of point clouds
-    Eigen::Vector3d cm,cd;
-
-    cm = mean(M);
-    cd = mean(D);
-
-    //Create Kd-tree of model points
-    pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-
-    kdtree.setInputCloud (M);
-
-    //Number of nearest neighbours
-    const int K = 1;
-
-    std::vector<int> pointIdxNKNSearch(K);
-    std::vector<float> pointNKNSquaredDistance(K);
-
-    std::vector<int>* indexes (new std::vector<int>(D->size()));
-
-    Eigen::Matrix3d H;
-
-    for(auto it = D->begin(); it != D->end(); ++it)
-    {
-        if(kdtree.nearestKSearch(*it,K,pointIdxNKNSearch,pointNKNSquaredDistance) > 0)
-        {
-            indexes->push_back(pointIdxNKNSearch[0]);
-
-            Eigen::Vector3d point0;
-            Eigen::Vector3d point1;
-
-            point0 << it->x, it->y, it->z;
-            point1 <<   M->points[ pointIdxNKNSearch[0] ].x,
-                    M->points[ pointIdxNKNSearch[0] ].y,
-                    M->points[ pointIdxNKNSearch[0] ].z;
-            //Remove means
-            point0 -= cm;
-            point1 -= cd;
-            H(0,0) += point0.x() *point1.x();
-            H(0,1) += point0.x() *point1.y();
-            H(0,2) += point0.x() *point1.z();
-            H(1,0) += point0.y() *point1.x();
-            H(1,1) += point0.y() *point1.y();
-            H(1,2) += point0.y() *point1.z();
-            H(2,0) += point0.z() *point1.x();
-            H(2,1) += point0.z() *point1.y();
-            H(2,2) += point0.z() *point1.z();
-        }
-    }
-
-    Eigen::JacobiSVD<Eigen::Matrix3d> svd(H, Eigen::ComputeFullV | Eigen::ComputeFullU);
-
-    R = svd.matrixV() * svd.matrixU().transpose();
-
-    t = cm - R*cd;
-
-    float oldError = error;
-    error = 0;
-    int i = 0;
-    for(auto it = D->begin(); it != D->end(); ++it)
-    {
-        error += std::sqrtf(std::powf(it->x - M->points[ indexes->at(i) ].x, 2)
-                + std::powf(it->y - M->points[ indexes->at(i) ].y, 2) +
-                + std::powf(it->z - M->points[ indexes->at(i) ].z, 2));
-        ++i;
-    }
-    error /= D->size();
-    float diff = abs(oldError - error);
-    if(showResult) {
-        std::cout << "Rotation " << std::endl << R << std::endl;
-        std::cout << "Translation " << std::endl << t << std::endl;
-        std::cout << "Error "<< error << std::endl;
-        std::cout << oldError << std::endl;
-        std::cout << "Error difference " << diff << std::endl;
-    }
-
-
-    delete indexes;
-    return diff < eps;
-}
-
-Eigen::Vector3d mean(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr points) {
-    Eigen::Vector3d cm;
-
-    for(auto it = points->begin(); it != points->end(); ++it){
-
-        cm(0) += it->x;
-        cm(1) += it->y;
-        cm(2) += it->z;
-    }
-    cm /= points->size();
-    return cm;
 }

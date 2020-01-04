@@ -8,7 +8,7 @@ void SimpleICP::run(int maxIterations,
          bool showResult,
          float eps){
     Eigen::Vector3d t = Eigen::Vector3d::Zero(3);
-    Eigen::Matrix3d R = Eigen::Matrix3d::Zero();
+    Eigen::Matrix3d R = Eigen::Matrix3d::Ones();
 
     _error = 0;
 
@@ -18,17 +18,34 @@ void SimpleICP::run(int maxIterations,
         {
             break;
         }
+
+
         Eigen::Matrix4d transform = Eigen::Matrix4d::Identity();
         transform << R(0,0), R(0,1), R(0,2), t(0),
                 R(1,0), R(1,1), R(1,2), t(1),
                 R(2,0), R(2,1), R(2,2), t(2),
                 0, 0, 0, 1;
 
-        //Setting new point cloud
-        pcl::transformPointCloud(*_D, *_D, transform);
-        setNewD(_D);
+        Eigen::Matrix4d rotation = Eigen::Matrix4d::Identity();
+
+        rotation << R(0,0), R(0,1), R(0,2), 0,
+                R(1,0), R(1,1), R(1,2), 0,
+                R(2,0), R(2,1), R(2,2), 0,
+                0, 0, 0, 1;
+
+        Eigen::Matrix4d translation = Eigen::Matrix4d::Identity();
+
+        translation << 1, 0, 0, t(0),
+                0, 1, 0, t(1),
+                0, 0, 1, t(2),
+                0, 0, 0, 1;
 
         _transformation *= transform;
+
+        //Setting new point cloud
+        pcl::transformPointCloud(*_D, *_D, transform.transpose().cast<float>());
+
+        setNewD(_D);
 
         if(showResult)
         {
@@ -54,7 +71,7 @@ bool SimpleICP::iterate(
 
     auto * pairs (new std::set<struct PointPair>);
 
-    Eigen::Matrix3d H;
+    Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
 
     for(auto i = 0; i < _D->size(); ++i)
     {

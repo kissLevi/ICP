@@ -21,13 +21,13 @@
 
 bool iterate(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr M,
              const pcl::PointCloud<pcl::PointXYZ>::ConstPtr D,
-             Eigen::Matrix3d& R,
-             Eigen::Vector3d& t,
+             Eigen::Matrix3f& R,
+             Eigen::Vector3f& t,
              float& error,
              bool showResult = false,
              float eps = 0.001);
 
-Eigen::Vector3d mean(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr points);
+Eigen::Vector3f mean(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr points);
 
 int main(int argc, char** argv) {
 

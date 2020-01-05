@@ -29,7 +29,7 @@ struct PointPair {
 
     public:
         typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
-        inline BaseICP(BaseICP::PointCloud::Ptr M, BaseICP::PointCloud::Ptr D) : _D(D), _M(M), _transformation(Eigen::Matrix4d::Identity())
+        inline BaseICP(BaseICP::PointCloud::Ptr M, BaseICP::PointCloud::Ptr D) : _D(D), _M(M), _transformation(Eigen::Matrix4f::Identity())
         {
             _buildKdTree(M);
         _cm = _mean(M);
@@ -47,7 +47,7 @@ struct PointPair {
         _cd = _mean(D);
     };
 
-    inline const Eigen::Matrix4d getFinalTransformation()
+    inline const Eigen::Matrix4f getFinalTransformation()
     {
         return _transformation;
     }
@@ -63,16 +63,16 @@ protected:
     PointCloud::Ptr _D;
     PointCloud::Ptr _M;
 
-    Eigen::Vector3d _cm;
-    Eigen::Vector3d _cd;
+    Eigen::Vector3f _cm;
+    Eigen::Vector3f _cd;
 
     pcl::KdTreeFLANN<pcl::PointXYZ> _kdTree;
 
     float _error;
-    Eigen::Matrix4d _transformation;
+    Eigen::Matrix4f _transformation;
 
-    inline Eigen::Vector3d _mean(const PointCloud::ConstPtr points) {
-        Eigen::Vector3d cm;
+    inline Eigen::Vector3f _mean(const PointCloud::ConstPtr points) {
+        Eigen::Vector3f cm;
 
         for(auto it = points->begin(); it != points->end(); ++it){
             cm(0) += it->x;

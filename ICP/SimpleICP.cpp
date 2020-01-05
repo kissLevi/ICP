@@ -5,8 +5,8 @@
 #include "SimpleICP.h"
 
 void SimpleICP::run(int maxIterations, bool showResult, float eps){
-    Eigen::Vector3d t = Eigen::Vector3d::Zero(3);
-    Eigen::Matrix3d R = Eigen::Matrix3d::Ones();
+    Eigen::Vector3f t = Eigen::Vector3f::Zero(3);
+    Eigen::Matrix3f R = Eigen::Matrix3f::Ones();
 
     _error = 0;
 
@@ -17,7 +17,7 @@ void SimpleICP::run(int maxIterations, bool showResult, float eps){
             break;
         }
 
-        Eigen::Matrix4d transform = Eigen::Matrix4d::Identity();
+        Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
         transform << R(0,0), R(0,1), R(0,2), t(0),
                 R(1,0), R(1,1), R(1,2), t(1),
                 R(2,0), R(2,1), R(2,2), t(2),
@@ -39,8 +39,8 @@ void SimpleICP::run(int maxIterations, bool showResult, float eps){
 }
 
 bool SimpleICP::iterate(
-        Eigen::Matrix3d& R,
-        Eigen::Vector3d& t,
+        Eigen::Matrix3f& R,
+        Eigen::Vector3f& t,
         float& error,
         float eps) {
 
@@ -64,8 +64,8 @@ bool SimpleICP::iterate(
     float oldError = error;
     error = 0;
 
-    _cm = Eigen::Vector3d::Zero();
-    _cd = Eigen::Vector3d::Zero();
+    _cm = Eigen::Vector3f::Zero();
+    _cd = Eigen::Vector3f::Zero();
     for(auto & pair : *pairs)
     {
         _cm(0) += _M->points[ pair.modelPointIndex].x;
@@ -87,9 +87,9 @@ bool SimpleICP::iterate(
     std::cout << pairs->size() << std::endl;
 
 
-    Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
-    Eigen::Vector3d dataPoint = Eigen::Vector3d::Zero();
-    Eigen::Vector3d modelPoint = Eigen::Vector3d::Zero();
+    Eigen::Matrix3f H = Eigen::Matrix3f::Zero();
+    Eigen::Vector3f dataPoint = Eigen::Vector3f::Zero();
+    Eigen::Vector3f modelPoint = Eigen::Vector3f::Zero();
 
 
     for(auto & pair : *pairs) {

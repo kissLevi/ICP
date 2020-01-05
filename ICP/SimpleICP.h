@@ -15,8 +15,8 @@ public:
              float eps = 0.001);
 private:
     bool iterate(
-            Eigen::Matrix3d& R,
-            Eigen::Vector3d& t,
+            Eigen::Matrix3f& R,
+            Eigen::Vector3f& t,
             float& error,
             float eps = 0.001);
 };

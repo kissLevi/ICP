@@ -5,8 +5,8 @@
 #include "TrICP.h"
 
 void TrICP::run(int maxIterations, bool showResult, float eps) {
-    Eigen::Vector3d t = Eigen::Vector3d::Zero(3);
-    Eigen::Matrix3d R = Eigen::Matrix3d::Identity();
+    Eigen::Vector3f t = Eigen::Vector3f::Zero(3);
+    Eigen::Matrix3f R = Eigen::Matrix3f::Identity();
 
     _error = 0;
 
@@ -17,7 +17,7 @@ void TrICP::run(int maxIterations, bool showResult, float eps) {
             break;
         }
 
-        Eigen::Matrix4d transform = Eigen::Matrix4d::Identity();
+        Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
         transform << R(0,0), R(0,1), R(0,2), t(0),
                 R(1,0), R(1,1), R(1,2), t(1),
                 R(2,0), R(2,1), R(2,2), t(2),
@@ -41,8 +41,8 @@ void TrICP::run(int maxIterations, bool showResult, float eps) {
 }
 
 bool TrICP::iterate(
-        Eigen::Matrix3d& R,
-        Eigen::Vector3d& t,
+        Eigen::Matrix3f& R,
+        Eigen::Vector3f& t,
         float& error,
         float eps){
 
@@ -57,9 +57,9 @@ bool TrICP::iterate(
 
     float oldError = 0;
 
-    _cm = Eigen::Vector3d::Zero();
-    _cd = Eigen::Vector3d::Zero();
-    
+    _cm = Eigen::Vector3f::Zero();
+    _cd = Eigen::Vector3f::Zero();
+
 
     for(int i = 0; i < _D->size(); ++i)
     {
@@ -85,14 +85,12 @@ bool TrICP::iterate(
     _cm /= points->size();
     _cd /= points->size();
 
-    auto rng = std::default_random_engine {};
-    //std::shuffle(std::begin(*points), std::end(*points), rng);
+    std::sort(points->begin(),points->end());
 
 
-
-    Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
-    Eigen::Vector3d modelPoint = Eigen::Vector3d::Zero();
-    Eigen::Vector3d dataPoint = Eigen::Vector3d::Zero();
+    Eigen::Matrix3f H = Eigen::Matrix3f::Zero();
+    Eigen::Vector3f modelPoint = Eigen::Vector3f::Zero();
+    Eigen::Vector3f dataPoint = Eigen::Vector3f::Zero();
 
     for (auto point : *points) {
         dataPoint << _D->at(point.dataPointIndex).x, _D->at(point.dataPointIndex).y, _D->at(point.dataPointIndex).z;
@@ -126,8 +124,8 @@ bool TrICP::iterate(
 }
 
 
-/*Eigen::Vector3d pointM = means.first;
-   Eigen::Vector3d pointD = means.second;
+/*Eigen::Vector3f pointM = means.first;
+   Eigen::Vector3f pointD = means.second;
 
    N(0,0) = pointM.x()*pointD.x() + pointM.y()*pointD.y() + pointM.z()*pointD.z();
    N(0,1) = pointM.y()*pointD.z() + pointM.z()*pointD.y();
@@ -148,12 +146,12 @@ bool TrICP::iterate(
    N(3,1) = pointM.y()*pointD.z() + pointM.z()*pointD.y();
    N(3,2) = pointM.z()*pointD.x() + pointM.x()*pointD.z();
    N(3,3) = -pointM.x()*pointD.x() - pointM.y()*pointD.y() + pointM.z()*pointD.z();*/
-/*Eigen::EigenSolver<Eigen::Matrix4d> solver(N, true);
+/*Eigen::EigenSolver<Eigen::Matrix4f> solver(N, true);
 
 /*std::cout << solver.eigenvectors().cast<double>() <<std::endl;
 std::cout << solver.eigenvalues().cast<double>() <<std::endl;*/
 
-/*Eigen::Vector4d eigenValues = solver.eigenvalues().real();
+/*Eigen::Vector4f eigenValues = solver.eigenvalues().real();
 
 double biggestEigenValueIndex =  0;
 for(int i = 1;i<4;++i)
@@ -164,7 +162,7 @@ for(int i = 1;i<4;++i)
     }
 }
 
-Eigen::Vector4d greatestEigenVector = solver.eigenvectors().real().row(biggestEigenValueIndex);
+Eigen::Vector4f greatestEigenVector = solver.eigenvectors().real().row(biggestEigenValueIndex);
 
 R(0,0) = std::powf(greatestEigenVector(0),2) + std::powf(greatestEigenVector(1),2) - std::powf(greatestEigenVector(2),2) - std::powf(greatestEigenVector(3),2);
 R(0,1) = 2*greatestEigenVector(1)*greatestEigenVector(2) - 2*greatestEigenVector(0)*greatestEigenVector(3);

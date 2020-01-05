@@ -32,19 +32,19 @@ struct PointPair {
         inline BaseICP(BaseICP::PointCloud::Ptr M, BaseICP::PointCloud::Ptr D) : _D(D), _M(M), _transformation(Eigen::Matrix4f::Identity())
         {
             _buildKdTree(M);
-        _cm = _mean(M);
-        _cd = _mean(D);
+        _cm = mean(M->begin(),M->end());
+        _cd = mean(M->begin(),M->end());
     };
     inline void setNewM(PointCloud::Ptr M)
     {
         _buildKdTree(M);
         _M = M;
-        _cm = _mean(M);
+        _cm = mean(M->begin(),M->end());
     };
     inline void setNewD(PointCloud::Ptr D)
     {
         _D = D;
-        _cd = _mean(D);
+        _cd = mean(D->begin(),D->end());
     };
 
     inline const Eigen::Matrix4f getFinalTransformation()
@@ -56,9 +56,31 @@ struct PointPair {
     {
         return _D;
     }
-    virtual void run(int maxIterations = 50,
-                     bool showResult = false,
-                     float eps = 0.001) = 0;
+
+    inline void run(int maxIterations, bool showResult, float eps) {
+        Eigen::Vector3f t = Eigen::Vector3f::Zero(3);
+        Eigen::Matrix3f R = Eigen::Matrix3f::Identity();
+
+        _error = 0;
+
+        for(int i = 0; i < maxIterations; ++i)
+        {
+            if (iterate(R, t,_error,eps))
+            {
+                break;
+            }
+
+            if(showResult)
+            {
+                std::cout << "Iteration: " <<i+1 << std::endl;
+                std::cout << "Rotation matrix: " << std::endl << R << std::endl;
+                std::cout << "Translation vector: " << std::endl << t << std::endl;
+                std::cout << "Error: " << _error << std::endl;
+            }
+        }
+
+
+    }
 protected:
     PointCloud::Ptr _D;
     PointCloud::Ptr _M;
@@ -71,17 +93,22 @@ protected:
     float _error;
     Eigen::Matrix4f _transformation;
 
-    inline Eigen::Vector3f _mean(const PointCloud::ConstPtr points) {
-        Eigen::Vector3f cm;
+    virtual bool iterate(Eigen::Matrix3f& R, Eigen::Vector3f& t, float& error, float eps) = 0;
 
-        for(auto it = points->begin(); it != points->end(); ++it){
-            cm(0) += it->x;
-            cm(1) += it->y;
-            cm(2) += it->z;
+    template <typename iterator>
+    inline Eigen::Vector3f mean(iterator first, iterator last)
+    {
+        int count = 0;
+        Eigen::Vector3f result;
+        for(iterator it = first; it!= last; it++)
+        {
+            pcl::PointXYZ z;
+            count++;
+            result += it->getVector3fMap();
         }
-        cm /= points->size();
-        return cm;
+        return result /= count;
     }
+
 private:
     inline void _buildKdTree(PointCloud::Ptr points) {
         _kdTree.setInputCloud(points);

@@ -4,40 +4,6 @@
 
 #include "SimpleICP.h"
 
-void SimpleICP::run(int maxIterations, bool showResult, float eps){
-    Eigen::Vector3f t = Eigen::Vector3f::Zero(3);
-    Eigen::Matrix3f R = Eigen::Matrix3f::Ones();
-
-    _error = 0;
-
-    for(int i = 0; i < maxIterations; ++i)
-    {
-        if (iterate(R, t,_error,eps))
-        {
-            break;
-        }
-
-        Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
-        transform << R(0,0), R(0,1), R(0,2), t(0),
-                R(1,0), R(1,1), R(1,2), t(1),
-                R(2,0), R(2,1), R(2,2), t(2),
-                0, 0, 0, 1;
-
-        _transformation *= transform;
-
-        //Setting new point cloud
-        pcl::transformPointCloud(*_D, *_D, transform);
-
-        if(showResult)
-        {
-            std::cout << "Iteration: " <<i+1 << std::endl;
-            std::cout << "Rotation matrix: " << std::endl << R << std::endl;
-            std::cout << "Translation vector: " << std::endl << t << std::endl;
-            std::cout << "Error: " << _error << std::endl;
-        }
-    }
-}
-
 bool SimpleICP::iterate(
         Eigen::Matrix3f& R,
         Eigen::Vector3f& t,
@@ -50,7 +16,6 @@ bool SimpleICP::iterate(
     std::vector<int> pointIdxNKNSearch(K);
     std::vector<float> pointNKNSquaredDistance(K);
 
-
     auto * pairs (new std::vector<struct PointPair>);
 
     for(auto i = 0; i < _D->size(); ++i)
@@ -61,31 +26,22 @@ bool SimpleICP::iterate(
         }
     }
 
-    float oldError = error;
-    error = 0;
+    float oldError = 0;
 
     _cm = Eigen::Vector3f::Zero();
     _cd = Eigen::Vector3f::Zero();
     for(auto & pair : *pairs)
     {
-        _cm(0) += _M->points[ pair.modelPointIndex].x;
-        _cm(1) += _M->points[ pair.modelPointIndex].y;
-        _cm(2) += _M->points[ pair.modelPointIndex].z;
+        _cm -= _M->points[pair.modelPointIndex].getVector3fMap();
+        _cd -= _D->points[pair.dataPointIndex].getVector3fMap();
 
-        _cd(0) += _D->points[ pair.dataPointIndex].x;
-        _cd(1) += _D->points[ pair.dataPointIndex].y;
-        _cd(2) += _D->points[ pair.dataPointIndex].z;
-
-        error += std::powf(_M->points[ pair.modelPointIndex].x - _D->points[pair.dataPointIndex].x, 2)
+        oldError += std::powf(_M->points[ pair.modelPointIndex].x - _D->points[pair.dataPointIndex].x, 2)
                             + std::powf(_M->points[ pair.modelPointIndex].y - _D->points[pair.dataPointIndex].y, 2) +
                             + std::powf(_M->points[ pair.modelPointIndex].z - _D->points[pair.dataPointIndex].z, 2);
     }
-    error /= _D->size();
+    oldError /= _D->size();
     _cm /= pairs->size();
     _cd /= pairs->size();
-
-    std::cout << pairs->size() << std::endl;
-
 
     Eigen::Matrix3f H = Eigen::Matrix3f::Zero();
     Eigen::Vector3f dataPoint = Eigen::Vector3f::Zero();
@@ -94,8 +50,8 @@ bool SimpleICP::iterate(
 
     for(auto & pair : *pairs) {
 
-        dataPoint << _D->points[pair.dataPointIndex].x, _D->points[pair.dataPointIndex].y, _D->points[pair.dataPointIndex].z;
-        modelPoint << _M->points[pair.modelPointIndex].x, _M->points[pair.modelPointIndex].y, _M->points[pair.modelPointIndex].z;
+        dataPoint = _D->points[pair.dataPointIndex].getVector3fMap();
+        modelPoint = _M->points[pair.modelPointIndex].getVector3fMap();
         //Remove means
 
         dataPoint -= _cd;
@@ -116,6 +72,23 @@ bool SimpleICP::iterate(
     R = a.matrixV() * a.matrixU().transpose();
 
     t = _cm - R*_cd;
+
+    Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
+
+    transform.block<3,3>(0,0) = R;
+    transform.block<3,1>(0,3) = t;
+
+    _transformation *= transform;
+
+    //Setting new point cloud
+    pcl::transformPointCloud(*_D, *_D, transform);
+
+    for (auto point : *pairs) {
+        error += std::powf(_M->points[point.modelPointIndex].x - _D->points[point.dataPointIndex].x, 2)
+                 + std::powf(_M->points[point.modelPointIndex].y - _D->points[point.dataPointIndex].y, 2) +
+                 +std::powf(_M->points[point.modelPointIndex].z - _D->points[point.dataPointIndex].z, 2);
+    }
+    error /= pairs->size();
 
     float diff = abs(oldError - error);
 

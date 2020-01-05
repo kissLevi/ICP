@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <vector>
 #include "SimpleICP.h"
-#include <random>
+#include <set>
 
 class TrICP : public BaseICP {
 public:
@@ -20,20 +20,18 @@ public:
                                         _selectionPercentage(selectionPercentage),
                                         _Sts(MAXFLOAT),
                                          _smallTrimemdMSE(smallTrimemdMSE){};
-    void run(int maxIterations = 50,
-             bool showResult = false,
-             float eps = 0.001);
-
-private:
-    float _selectionPercentage;
-    float _Sts;
-    float _smallTrimemdMSE;
-
+protected:
     bool iterate(
             Eigen::Matrix3f& R,
             Eigen::Vector3f& t,
             float& error,
             float eps = 0.001);
+private:
+    float _selectionPercentage;
+    float _Sts;
+    float _smallTrimemdMSE;
+
+
 };
 
 

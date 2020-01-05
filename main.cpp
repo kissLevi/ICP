@@ -58,8 +58,8 @@ int main(int argc, char** argv) {
 
     if(!pclImpl)
     {
-        TrICP icp(M, Final, 1.0);
-        icp.run(maxIterations,false,0.0000001);
+        TrICP icp(M, Final);
+        icp.run(maxIterations,true,0.0000001);
 
         auto finalTransformation = icp.getFinalTransformation();
 

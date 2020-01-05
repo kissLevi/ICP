@@ -10,10 +10,8 @@
 class SimpleICP : public BaseICP  {
 public:
     SimpleICP(BaseICP::PointCloud::Ptr M, BaseICP::PointCloud::Ptr D) :BaseICP(M,D){};
-    void run(int maxIterations = 50,
-             bool showResult = false,
-             float eps = 0.001);
-private:
+
+protected:
     bool iterate(
             Eigen::Matrix3f& R,
             Eigen::Vector3f& t,

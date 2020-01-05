@@ -6,44 +6,6 @@
 #define ICP_SIMPLEICP_H
 
 #include "BaseICP.h"
-#include <set>
-#include <pcl/visualization/pcl_visualizer.h>
-
-struct PointPair {
-
-    float squaredDistance;
-    int modelPointIndex;
-    int dataPointIndex;
-
-    PointPair(float squaredDistance, int modelPointIndex, int dataPointIndex):
-        squaredDistance(squaredDistance),
-        modelPointIndex(modelPointIndex),
-        dataPointIndex(dataPointIndex){};
-    PointPair() = default;
-
-    bool operator <(const PointPair& pt) const
-    {
-        return (this->squaredDistance < pt.squaredDistance);
-    }
-};
-
-/*if(squaredDistance == pt.squaredDistance)
-{
-    if(dataPointIndex == pt.dataPointIndex)
-    {
-        if(modelPointIndex == pt.modelPointIndex){
-            return false;
-        }else{
-            return modelPointIndex <pt.modelPointIndex;
-        }
-    }
-    else{
-        return dataPointIndex <pt.dataPointIndex;
-    }
-}
-else{
-    return squaredDistance <pt.squaredDistance;
-}*/
 
 class SimpleICP : public BaseICP  {
 public:

@@ -58,12 +58,13 @@ int main(int argc, char** argv) {
 
     if(!pclImpl)
     {
-        SimpleICP icp(M, Final);
-        icp.run(maxIterations,false,0.000001);
+        TrICP icp(M, Final, 1.0);
+        icp.run(maxIterations,false,0.0000001);
 
         auto finalTransformation = icp.getFinalTransformation();
 
         std::cout << finalTransformation <<std::endl;
+
 
     }
     else{

@@ -4,9 +4,7 @@
 
 #include "SimpleICP.h"
 
-void SimpleICP::run(int maxIterations,
-         bool showResult,
-         float eps){
+void SimpleICP::run(int maxIterations, bool showResult, float eps){
     Eigen::Vector3d t = Eigen::Vector3d::Zero(3);
     Eigen::Matrix3d R = Eigen::Matrix3d::Ones();
 
@@ -18,7 +16,6 @@ void SimpleICP::run(int maxIterations,
         {
             break;
         }
-
 
         Eigen::Matrix4d transform = Eigen::Matrix4d::Identity();
         transform << R(0,0), R(0,1), R(0,2), t(0),
@@ -48,25 +45,19 @@ bool SimpleICP::iterate(
         float eps) {
 
     //Number of nearest neighbours
-    const int K = 200;
+    const int K = 1;
 
     std::vector<int> pointIdxNKNSearch(K);
     std::vector<float> pointNKNSquaredDistance(K);
 
 
-    auto * pairs (new std::set<struct PointPair>);
+    auto * pairs (new std::vector<struct PointPair>);
 
     for(auto i = 0; i < _D->size(); ++i)
     {
         if(_kdTree.nearestKSearch(_D->points[i],K,pointIdxNKNSearch,pointNKNSquaredDistance) > 0)
         {
-            std::pair<std::set<struct PointPair>::iterator , bool > result;
-
-            int elementIndex = 0;
-            do{
-                result = pairs->insert(PointPair(pointNKNSquaredDistance[elementIndex],pointIdxNKNSearch[elementIndex],i));
-                ++elementIndex;
-            }while(!result.second && elementIndex <K);
+            pairs->push_back(PointPair(pointNKNSquaredDistance[0],pointIdxNKNSearch[0],i));
         }
     }
 
@@ -93,15 +84,20 @@ bool SimpleICP::iterate(
     _cm /= pairs->size();
     _cd /= pairs->size();
 
+    std::cout << pairs->size() << std::endl;
+
+
     Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
-    Eigen::Vector3d dataPoint;
-    Eigen::Vector3d modelPoint;
+    Eigen::Vector3d dataPoint = Eigen::Vector3d::Zero();
+    Eigen::Vector3d modelPoint = Eigen::Vector3d::Zero();
+
+
     for(auto & pair : *pairs) {
+
         dataPoint << _D->points[pair.dataPointIndex].x, _D->points[pair.dataPointIndex].y, _D->points[pair.dataPointIndex].z;
-        modelPoint << _M->points[pair.modelPointIndex].x,
-                _M->points[pair.modelPointIndex].y,
-                _M->points[pair.modelPointIndex].z;
+        modelPoint << _M->points[pair.modelPointIndex].x, _M->points[pair.modelPointIndex].y, _M->points[pair.modelPointIndex].z;
         //Remove means
+
         dataPoint -= _cd;
         modelPoint -= _cm;
         H(0, 0) += dataPoint.x() * modelPoint.x();
@@ -114,9 +110,10 @@ bool SimpleICP::iterate(
         H(2, 1) += dataPoint.z() * modelPoint.y();
         H(2, 2) += dataPoint.z() * modelPoint.z();
     }
-    Eigen::JacobiSVD<Eigen::Matrix3d> svd(H, Eigen::ComputeFullV | Eigen::ComputeFullU);
 
-    R = svd.matrixV() * svd.matrixU().transpose();
+    auto a = H.jacobiSvd(Eigen::ComputeFullV | Eigen::ComputeFullU);
+
+    R = a.matrixV() * a.matrixU().transpose();
 
     t = _cm - R*_cd;
 

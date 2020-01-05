@@ -8,13 +8,30 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl-1.9/pcl/common/transforms.h>
 
-class BaseICP {
+struct PointPair {
+    float squaredDistance;
+    int modelPointIndex;
+    int dataPointIndex;
 
-public:
-    typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
-    inline BaseICP(BaseICP::PointCloud::Ptr M, BaseICP::PointCloud::Ptr D) : _D(D), _M(M), _transformation(Eigen::Matrix4d::Identity())
-    {
-        _buildKdTree(M);
+        PointPair(float squaredDistance, int modelPointIndex, int dataPointIndex):
+        squaredDistance(squaredDistance),
+                modelPointIndex(modelPointIndex),
+                dataPointIndex(dataPointIndex){};
+        PointPair() = default;
+
+        bool operator <(const PointPair& pt) const
+        {
+            return (this->squaredDistance < pt.squaredDistance);
+        }
+    };
+
+    class BaseICP {
+
+    public:
+        typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
+        inline BaseICP(BaseICP::PointCloud::Ptr M, BaseICP::PointCloud::Ptr D) : _D(D), _M(M), _transformation(Eigen::Matrix4d::Identity())
+        {
+            _buildKdTree(M);
         _cm = _mean(M);
         _cd = _mean(D);
     };

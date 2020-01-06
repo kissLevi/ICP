@@ -19,7 +19,7 @@ add_definitions(${PCL_DEFINITIONS})
 include_directories(/usr/local/opt/g2o/include)
 link_directories(/usr/local/opt/g2o/lib)
 
-add_executable(icp main.cpp ICP/BaseICP.h ICP/SimpleICP.cpp ICP/SimpleICP.h ICP/TrICP.cpp ICP/TrICP.h)
+add_executable(icp main.cpp ICP/BaseICP.h ICP/SimpleICP.cpp ICP/SimpleICP.h ICP/TrICP.cpp ICP/TrICP.h ICP/MeasurementHelper.cpp ICP/MeasurementHelper.h)
 
 target_link_libraries( icp  Eigen3::Eigen ${PCL_LIBRARIES}
         g2o_core

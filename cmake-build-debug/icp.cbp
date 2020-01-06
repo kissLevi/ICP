@@ -157,6 +157,12 @@
 		<Unit filename="/Users/Jana/Documents/Elte/Msc3/icp/ICP/BaseICP.h">
 			<Option target="icp"/>
 		</Unit>
+		<Unit filename="/Users/Jana/Documents/Elte/Msc3/icp/ICP/MeasurementHelper.cpp">
+			<Option target="icp"/>
+		</Unit>
+		<Unit filename="/Users/Jana/Documents/Elte/Msc3/icp/ICP/MeasurementHelper.h">
+			<Option target="icp"/>
+		</Unit>
 		<Unit filename="/Users/Jana/Documents/Elte/Msc3/icp/ICP/SimpleICP.cpp">
 			<Option target="icp"/>
 		</Unit>

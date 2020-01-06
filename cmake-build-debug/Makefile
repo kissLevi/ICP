@@ -123,6 +123,33 @@ icp/fast:
 	$(MAKE) -f CMakeFiles/icp.dir/build.make CMakeFiles/icp.dir/build
 .PHONY : icp/fast
 
+ICP/MeasurementHelper.o: ICP/MeasurementHelper.cpp.o
+
+.PHONY : ICP/MeasurementHelper.o
+
+# target to build an object file
+ICP/MeasurementHelper.cpp.o:
+	$(MAKE) -f CMakeFiles/icp.dir/build.make CMakeFiles/icp.dir/ICP/MeasurementHelper.cpp.o
+.PHONY : ICP/MeasurementHelper.cpp.o
+
+ICP/MeasurementHelper.i: ICP/MeasurementHelper.cpp.i
+
+.PHONY : ICP/MeasurementHelper.i
+
+# target to preprocess a source file
+ICP/MeasurementHelper.cpp.i:
+	$(MAKE) -f CMakeFiles/icp.dir/build.make CMakeFiles/icp.dir/ICP/MeasurementHelper.cpp.i
+.PHONY : ICP/MeasurementHelper.cpp.i
+
+ICP/MeasurementHelper.s: ICP/MeasurementHelper.cpp.s
+
+.PHONY : ICP/MeasurementHelper.s
+
+# target to generate assembly for a file
+ICP/MeasurementHelper.cpp.s:
+	$(MAKE) -f CMakeFiles/icp.dir/build.make CMakeFiles/icp.dir/ICP/MeasurementHelper.cpp.s
+.PHONY : ICP/MeasurementHelper.cpp.s
+
 ICP/SimpleICP.o: ICP/SimpleICP.cpp.o
 
 .PHONY : ICP/SimpleICP.o
@@ -213,6 +240,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... icp"
+	@echo "... ICP/MeasurementHelper.o"
+	@echo "... ICP/MeasurementHelper.i"
+	@echo "... ICP/MeasurementHelper.s"
 	@echo "... ICP/SimpleICP.o"
 	@echo "... ICP/SimpleICP.i"
 	@echo "... ICP/SimpleICP.s"

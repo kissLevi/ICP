@@ -76,7 +76,6 @@ bool TrICP::iterate(
 
     oldError /= points->size();
 
-
     auto svd = H.jacobiSvd(Eigen::ComputeFullV | Eigen::ComputeFullU);
 
     R = svd.matrixV() * svd.matrixU().transpose();

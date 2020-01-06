@@ -57,15 +57,27 @@ struct PointPair {
         return _D;
     }
 
+    inline const int getNumberOfIterationTaken()
+    {
+        return _iterationTaked;
+    }
+
+    inline const float getFinalError()
+    {
+        return _finalError;
+    }
+
     inline void run(int maxIterations, bool showResult, float eps) {
         Eigen::Vector3f t = Eigen::Vector3f::Zero(3);
         Eigen::Matrix3f R = Eigen::Matrix3f::Identity();
 
-        _error = 0;
+        _finalError = 0;
+        _iterationTaked = 1;
 
         for(int i = 0; i < maxIterations; ++i)
         {
-            if (iterate(R, t,_error,eps))
+            _iterationTaked++;
+            if (iterate(R, t,_finalError,eps))
             {
                 break;
             }
@@ -75,11 +87,9 @@ struct PointPair {
                 std::cout << "Iteration: " <<i+1 << std::endl;
                 std::cout << "Rotation matrix: " << std::endl << R << std::endl;
                 std::cout << "Translation vector: " << std::endl << t << std::endl;
-                std::cout << "Error: " << _error << std::endl;
+                std::cout << "Error: " << _finalError << std::endl;
             }
         }
-
-
     }
 protected:
     PointCloud::Ptr _D;
@@ -110,6 +120,10 @@ protected:
     }
 
 private:
+
+        int _iterationTaked;
+    float _finalError;
+
     inline void _buildKdTree(PointCloud::Ptr points) {
         _kdTree.setInputCloud(points);
     }

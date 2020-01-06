@@ -16,6 +16,11 @@ bool SimpleICP::iterate(
     std::vector<int> pointIdxNKNSearch(K);
     std::vector<float> pointNKNSquaredDistance(K);
 
+    float oldError = 0;
+
+    _cm = Eigen::Vector3f::Zero();
+    _cd = Eigen::Vector3f::Zero();
+
     auto * pairs (new std::vector<struct PointPair>);
 
     for(auto i = 0; i < _D->size(); ++i)
@@ -23,25 +28,20 @@ bool SimpleICP::iterate(
         if(_kdTree.nearestKSearch(_D->points[i],K,pointIdxNKNSearch,pointNKNSquaredDistance) > 0)
         {
             pairs->push_back(PointPair(pointNKNSquaredDistance[0],pointIdxNKNSearch[0],i));
+
+            _cm += _M->points[pointIdxNKNSearch[0]].getVector3fMap();
+            _cd += _D->points[i].getVector3fMap();
+
+            oldError += std::powf(_M->points[pointIdxNKNSearch[0]].x - _D->points[i].x, 2)
+                        + std::powf(_M->points[pointIdxNKNSearch[0]].y - _D->points[i].y, 2) +
+                        + std::powf(_M->points[pointIdxNKNSearch[0]].z - _D->points[i].z, 2);
         }
     }
 
-    float oldError = 0;
-
-    _cm = Eigen::Vector3f::Zero();
-    _cd = Eigen::Vector3f::Zero();
-    for(auto & pair : *pairs)
-    {
-        _cm -= _M->points[pair.modelPointIndex].getVector3fMap();
-        _cd -= _D->points[pair.dataPointIndex].getVector3fMap();
-
-        oldError += std::powf(_M->points[ pair.modelPointIndex].x - _D->points[pair.dataPointIndex].x, 2)
-                            + std::powf(_M->points[ pair.modelPointIndex].y - _D->points[pair.dataPointIndex].y, 2) +
-                            + std::powf(_M->points[ pair.modelPointIndex].z - _D->points[pair.dataPointIndex].z, 2);
-    }
     oldError /= _D->size();
     _cm /= pairs->size();
     _cd /= pairs->size();
+
 
     Eigen::Matrix3f H = Eigen::Matrix3f::Zero();
     Eigen::Vector3f dataPoint = Eigen::Vector3f::Zero();
